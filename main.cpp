@@ -15,7 +15,7 @@ int COURSE_LIST_NUMBER = 10001;
 //公共必修、学科必修、学科选修、专业必修 、专业选修、实践必修、实践选修
 const std::map<unsigned int, std::string> course_nature_list = {{1, "公共必修"},{2, "学科必修"},{3, "学科选修"},{4, "专业必修"},{5, "专业选修"},{6, "实践必修"},{7, "实践选修"}};
 //0是英语，1是数学，2是计算机专业
-std::vector<std::string> major_list = {"大类"};
+std::vector<std::string> major_list = {"major"};
 std::map<unsigned int, ClassInformation*> total_class_list;
 std::map<unsigned int, Student*> total_student_list;
 
@@ -41,6 +41,8 @@ unsigned int how_many_student();
 //专业操作
 unsigned int new_major(const std::string & major_name);
 void major_list_show();
+//交互功能
+void welcome();
 
 
 //类的定义
@@ -249,7 +251,7 @@ public:
     }
 
     void detail_show() const {
-        printf("\t%d\t%s\t%d\t%d\t%d\t%d\t%s\n", this->student_id, this->student_name.c_str(),
+        printf("\t%d\t%s\t%s\t%d\t%lld\t%d\t%s\n", this->student_id, this->student_name.c_str(),
                this->major.c_str(), this->classroom_id, this->phone_number, this->age,
                (this->gender ? "man" : "girl"));
     }
@@ -315,6 +317,7 @@ void target_class_list_show(const int & course_id) {
         printf("\tclass id\tclass name\tclass nature\ttotal hour\tcredit\tsemester\tchoose number\n");
         course->second->class_show();
     }
+    who_choose_this_class(course_id);
     printf("the end\n");
 }
 void who_choose_this_class(const unsigned int &course_id) {
@@ -365,8 +368,15 @@ void student_list_show() {
 }
 void target_student_show(const unsigned int &student_id){
     printf("\tstudent id\tstudent name\tmajor\tclassroom\tphone number\tage\tgender\n");
-    const auto &s = total_student_list.find(student_id)->second;
-    s->detail_show();
+
+    const auto &s = total_student_list.find(student_id);\
+    if(s!=total_student_list.end())
+    {
+        s->second->detail_show();
+    }else{
+        printf("error");
+    }
+
 }
 bool student_choose_class(const unsigned int &student_id, const int &course_id) {
     auto s = total_student_list.find(student_id);
@@ -423,6 +433,10 @@ unsigned int how_many_student() {
     printf("there are %d students", number);
     return number;
 }
+
+
+
+
 //保存与读取初始化
 void save() {
 
@@ -437,11 +451,10 @@ void save() {
         std::string tmp(_tmp);
         auto tmp_dir = tmp+"/data/";
         if(0 != access(tmp_dir.c_str(),0)){
-            mkdir(tmp.c_str());
-            dir=tmp_dir;
+            mkdir(tmp_dir.c_str());
         }
+        dir=tmp_dir;
     }
-
     std::ofstream out1(dir+"class_data.txt");
     if (out1.is_open()) {
         for (const auto &course: total_class_list) {
@@ -476,34 +489,39 @@ void save() {
             for (const auto &i: student_data->choose_class_list) {
                 out4 << i.first << " " << i.second << "\n";
             }
+            out4.close();
         }
+        out3.close();
     }
     std::ofstream out5((dir+"major_list.txt"));
     if(out5.is_open()){
         for(const auto &major : major_list){
             out5 << major <<"\n";
         }
+        out5.close();
     }
+    out1.close();
+    out3.close();
+    out5.close();
 }
 void init() {
     std::string dir;
     {
         char _tmp[256];
-        getcwd(_tmp,256);
-        for(auto &c:_tmp){
-            if(c=='\\')
-                c='/';
+        getcwd(_tmp, 256);
+        for (auto &c: _tmp) {
+            if (c == '\\')
+                c = '/';
         }
         std::string tmp(_tmp);
-        auto tmp_dir = tmp+"/data/";
-        if(0 != access(tmp_dir.c_str(),0)){
-            mkdir(tmp.c_str());
-            dir=tmp_dir;
+        auto tmp_dir = tmp + "/data/";
+        if (0 != access(tmp_dir.c_str(), 0)) {
+            mkdir(tmp_dir.c_str());
         }
+        dir = tmp_dir;
     }
-
     std::ifstream in1(dir+"class_data.txt");
-    {
+    if(in1.is_open()){
         int course_id;//课程代码
         std::string course_name;//课程名称
         std::string course_nature;//课程性质
@@ -511,10 +529,11 @@ void init() {
         unsigned int credits;//学分
         unsigned int semester;//开课学期
         unsigned int choose_number;//选修人数
-        while (in1 >> course_id >> course_name >> course_nature >> total_hours >> credits >> semester>> choose_number) {
+        while (!in1.eof()) {
+            in1 >> course_id >> course_name >> course_nature >> total_hours >> credits >> semester>> choose_number;
             auto *temp_class = new ClassInformation(course_id, course_name, course_nature, total_hours, credits, semester, choose_number);
             std::ifstream in2(dir+"class_choose_student_" + std::to_string(course_id) + ".txt");
-            {
+            if(in2.is_open()){
                 std::map<unsigned int, std::basic_string<char>> list;
                 unsigned int student_id;
                 std::string student_name;
@@ -523,24 +542,25 @@ void init() {
                 }
                 temp_class->choose_student_list = list;
             }
+            in2.close();
             total_class_list.insert({course_id, temp_class});
         }
+        in1.close();
     }
     std::ifstream in3(dir+"student_data.txt");
-    {
+    if(in3.is_open()){
         unsigned int student_id;
         std::string student_name;
         bool gender;
         unsigned int years;
         std::string major;
         unsigned int classroom_id;
-        unsigned int phone_number;
-        while (in3 >> student_id >> student_name >> gender >> years >> major >> classroom_id >> classroom_id
-                   >> phone_number) {
-            auto *temp_student = new Student(student_id, student_name, gender, years, major, classroom_id,
-                                             phone_number);
+        long long phone_number;
+        while (!in3.eof()) {
+            in3 >> student_id >> student_name>> gender >> years>> major>> classroom_id>> phone_number;
+            auto *temp_student = new Student(student_id, student_name, gender, years, major, classroom_id,phone_number);
             std::ifstream in4(dir+"student_choose_class_" + std::to_string(student_id) + ".txt");
-            {
+            if(in4.is_open()){
                 std::map<int, std::string> list;
                 unsigned int class_id;
                 std::string class_name;
@@ -549,15 +569,18 @@ void init() {
                 }
                 temp_student->choose_class_list = list;
             }
+            in4.close();
             total_student_list.insert({student_id, temp_student});
         }
+        in3.close();
     }
     std::ifstream in5(dir+"major_list.txt");
-    {
+    if(in5.is_open()){
         std::string tmp_major;
         while (in5>>tmp_major){
             major_list.push_back(tmp_major);
         }
+        in5.close();
     }
     //初始化时更改COURSE_ID
     if(total_class_list.size()!=0){
@@ -581,8 +604,161 @@ void major_list_show(){
     printf("\n");
 }
 
+void course_nature_list_show(){
+    for(const auto& i:course_nature_list){
+        printf("%d: %s  ",i.first,i.second.c_str());
+    }
+}
+
+
+void welcome(){
+    system("cls");
+    std::cout<<"1. show all class"<<std::endl;
+    std::cout<<"2. show all student"<<std::endl;
+    std::cout<<"3. new student"<<std::endl;
+    std::cout<<"4. new class"<<std::endl;
+    std::cout<<"5. show target class"<<std::endl;
+    std::cout<<"6. show target student"<<std::endl;
+    std::cout<<"7. remove class"<<std::endl;
+    std::cout<<"8. remove student"<<std::endl;
+    std::cout<<"9. change student information"<<std::endl;
+    std::cout<<"10. statistical function"<<std::endl;
+    std::cout<<"0. save and exit"<<std::endl;
+}
+
+
 int main() {
+    init();
 
-
+    while (true){
+        welcome();
+        int choice;
+        std::cin >> choice;
+        switch (choice) {
+            case 1:
+                system("cls");
+                class_list_show();
+                system("pause");
+                break;
+            case 2:
+                system("cls");
+                student_list_show();
+                system("pause");
+                break;
+            case 3:
+            {
+                system("cls");
+                std::cout<<"input id,name,gender ,age,major,classroom_id,phone number "<<std::endl;
+                std::cout<<"gender 1 is man,0 is girl."<<std::endl;
+                major_list_show();
+                unsigned int student_id;
+                std::string student_name;
+                bool gender;
+                unsigned int years;
+                unsigned int major;
+                unsigned int classroom_id;
+                long long phone_number;
+                std::cin >>student_id >> student_name >> gender >> years >> major >> classroom_id >> phone_number;
+                if(new_student(student_id,student_name,gender,years,major,classroom_id,phone_number)){
+                    printf("success");
+                }
+                save();
+                system("pause");
+                break;
+            }
+            case 4:
+            {
+                system("cls");
+                std::cout<<"input ,name,nature ,total hours ,credits,semester "<<std::endl;
+                std::cout<<"course_nature is number";
+                course_nature_list_show();
+                std::string course_name;//课程名称
+                int course_nature;//课程性质
+                unsigned int total_hours;//总学时
+                unsigned int credits;//学分
+                unsigned int semester;//开课学期
+                std::cin >> course_name >> course_nature >> total_hours >> credits >> semester;
+                if(new_class(course_name,course_nature,total_hours,credits,semester)){
+                    printf("success");
+                }
+                save();
+                system("pause");
+                break;
+            }
+            case 5:
+            {
+                system("cls");
+                std::cout<<"target class_id"<<std::endl;
+                int class_id;
+                std::cin>>class_id;
+                target_class_list_show(class_id);
+                system("pause");
+                break;
+            }
+            case 6:
+            {
+                system("cls");
+                std::cout<<"target student_id"<<std::endl;
+                int student_id;
+                std::cin>>student_id;
+                target_student_show(student_id);
+                system("pause");
+                break;
+            }
+            case 7:
+            {
+                system("cls");
+                std::cout<<"target class_id"<<std::endl;
+                int class_id;
+                std::cin>>class_id;
+                if(remove_class(class_id)){
+                    printf("success");
+                }
+                save();
+                system("pause");
+                break;
+            }
+            case 8:
+            {
+                system("cls");
+                std::cout<<"target student_id"<<std::endl;
+                int student_id;
+                std::cin>>student_id;
+                if(remove_student(student_id)){
+                    printf("success");
+                }
+                save();
+                system("pause");
+                break;
+            }
+            case 9:
+            {
+                system("cls");
+                std::cout<<"target student_id"<<std::endl;
+                int student_id;
+                std::cin>>student_id;
+                student_change_information(student_id);
+            }
+            case 10:
+            {
+                system("cls");
+                std::cout<<"there are"<<how_many_class()<<"class"<<std::endl;
+                std::cout<<"there are"<<how_many_student()<<"student"<<std::endl;
+                system("pause");
+                break;
+            }
+            case 0:
+            {
+                save();
+                return 0;
+            }
+            default:
+            {
+                printf("error input");
+                system("pause");
+                break;
+            }
+        }
+    }
     return 0;
 }
