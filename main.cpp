@@ -30,7 +30,7 @@ void who_choose_this_class(const unsigned int &course_id);
 unsigned int how_many_student_choose_this_class(const unsigned int &course_id);
 unsigned int how_many_class();
 //学生
-bool new_student(const unsigned int &student_id, const std::string &student_name, bool gender, unsigned int ages, unsigned int major, unsigned int classroom_id, unsigned int phone_number);
+bool new_student(const unsigned int &student_id, const std::string &student_name, bool gender, unsigned int ages, unsigned int major, unsigned int classroom_id, long long phone_number);
 bool remove_student(const unsigned int &student_id);
 void student_list_show();
 void target_student_show(const unsigned int &student_id);
@@ -93,14 +93,14 @@ private:
     unsigned int age;
     std::string major;
     unsigned int classroom_id;
-    unsigned int phone_number;
+    long long phone_number;
     std::map<int, std::string> choose_class_list;
 
 public:
     friend void save();
     friend void init();
     Student(unsigned int Student_id, const std::string &Student_name, bool Gender, unsigned int Years,
-            unsigned int Major, unsigned int Classroom_id, unsigned int Phone_number) {
+            unsigned int Major, unsigned int Classroom_id, long long Phone_number) {
         student_id = Student_id;
         student_name = Student_name;
         gender = Gender;
@@ -111,7 +111,7 @@ public:
     }
 
     Student(unsigned int Student_id, const std::string &Student_name, bool Gender, unsigned int Years,
-            std::string Major, unsigned int Classroom_id, unsigned int Phone_number) {
+            std::string Major, unsigned int Classroom_id, long long Phone_number) {
         student_id = Student_id;
         student_name = Student_name;
         gender = Gender;
@@ -238,7 +238,7 @@ public:
         //修改联系方式
         printf("change student phone number as:  ");
         {
-            int tmp_int = -1;
+            long long tmp_int = -1;
             std::cin >> tmp_int;
             if (tmp_int > 0) {
                 this->phone_number = tmp_int;
@@ -333,7 +333,7 @@ unsigned int how_many_class() {
     return number;
 }
 //学生
-bool new_student(const unsigned int &student_id, const std::string &student_name, bool gender, unsigned int ages, unsigned int major, unsigned int classroom_id, unsigned int phone_number) {
+bool new_student(const unsigned int &student_id, const std::string &student_name, bool gender, unsigned int ages, unsigned int major, unsigned int classroom_id, long long phone_number) {
     if (total_student_list.count(student_id)) {
         printf("student id have existed\n");
         return false;
