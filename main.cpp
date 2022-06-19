@@ -269,8 +269,8 @@ public:
 int class_id_create(const std::string &course_name) {
     int class_id_now = COURSE_LIST_NUMBER;
     ++COURSE_LIST_NUMBER;
-    bool ok = total_class_list.count(class_id_now);
-    if (!ok) {
+    auto ok = total_class_list.find(class_id_now);
+    if (ok == total_class_list.end()) {
         return class_id_now;
     } else {
         return -1;
@@ -585,7 +585,7 @@ void init() {
     //初始化时更改COURSE_ID
     if(total_class_list.size()!=0){
         auto last = --total_class_list.end();
-        COURSE_LIST_NUMBER = last->first;
+        COURSE_LIST_NUMBER = last->first+1;
     }
 }
 //专业操作
@@ -608,6 +608,7 @@ void course_nature_list_show(){
     for(const auto& i:course_nature_list){
         printf("%d: %s  ",i.first,i.second.c_str());
     }
+    printf("\n");
 }
 
 
@@ -623,6 +624,8 @@ void welcome(){
     std::cout<<"8. remove student"<<std::endl;
     std::cout<<"9. change student information"<<std::endl;
     std::cout<<"10. statistical function"<<std::endl;
+    std::cout<<"11. student choose course"<<std::endl;
+    std::cout<<"12. student remove course"<<std::endl;
     std::cout<<"0. save and exit"<<std::endl;
 }
 
@@ -670,7 +673,7 @@ int main() {
             {
                 system("cls");
                 std::cout<<"input ,name,nature ,total hours ,credits,semester "<<std::endl;
-                std::cout<<"course_nature is number";
+                std::cout<<"course_nature is number"<<std::endl;
                 course_nature_list_show();
                 std::string course_name;//课程名称
                 int course_nature;//课程性质
@@ -746,6 +749,20 @@ int main() {
                 std::cout<<"there are"<<how_many_student()<<"student"<<std::endl;
                 system("pause");
                 break;
+            }
+            case 11:
+            {
+                std::cout<<"please input student_id and chosen_course_id"<<std::endl;
+                int student_id,course_id;
+                std::cin>>student_id>>course_id;
+                student_choose_class(student_id,course_id);
+            }
+            case 12:
+            {
+                std::cout<<"please input student_id and chosen_course_id"<<std::endl;
+                int student_id,course_id;
+                std::cin>>student_id>>course_id;
+                student_remove_class(student_id,course_id);
             }
             case 0:
             {
