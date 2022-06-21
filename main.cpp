@@ -626,6 +626,7 @@ void welcome(){
     std::cout<<"10. statistical function"<<std::endl;
     std::cout<<"11. student choose course"<<std::endl;
     std::cout<<"12. student remove course"<<std::endl;
+    std::cout<<"13. new major"<<std::endl;
     std::cout<<"0. save and exit"<<std::endl;
 }
 
@@ -745,8 +746,8 @@ int main() {
             case 10:
             {
                 system("cls");
-                std::cout<<"there are"<<how_many_class()<<"class"<<std::endl;
-                std::cout<<"there are"<<how_many_student()<<"student"<<std::endl;
+                std::cout<<"there are"<<how_many_class()<<std::endl;
+                std::cout<<"there are"<<how_many_student()<<std::endl;
                 system("pause");
                 break;
             }
@@ -763,6 +764,16 @@ int main() {
                 int student_id,course_id;
                 std::cin>>student_id>>course_id;
                 student_remove_class(student_id,course_id);
+            }
+            case 13:
+            {
+                std::cout<<"please input new major name"<<std::endl;
+                std::string tmp_major;
+                if(!tmp_major.empty()){
+                    new_major(tmp_major);
+                    break;
+                }
+                break;
             }
             case 0:
             {
