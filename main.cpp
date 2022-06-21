@@ -438,23 +438,25 @@ unsigned int how_many_student() {
 
 
 //保存与读取初始化
+std::string get_dir(){
+    char _tmp[256];
+    getcwd(_tmp,256);
+    for(auto &c:_tmp){
+        if(c=='\\')
+            c='/';
+    }
+    std::string tmp(_tmp);
+    auto tmp_dir = tmp+"/data/";
+    if(0 != access(tmp_dir.c_str(),0)){
+        mkdir(tmp_dir.c_str());
+    }
+    return tmp_dir;
+}
+
 void save() {
 
-    std::string dir;
-    {
-        char _tmp[256];
-        getcwd(_tmp,256);
-        for(auto &c:_tmp){
-            if(c=='\\')
-                c='/';
-        }
-        std::string tmp(_tmp);
-        auto tmp_dir = tmp+"/data/";
-        if(0 != access(tmp_dir.c_str(),0)){
-            mkdir(tmp_dir.c_str());
-        }
-        dir=tmp_dir;
-    }
+    std::string dir = get_dir();
+
     std::ofstream out1(dir+"class_data.txt");
     if (out1.is_open()) {
         for (const auto &course: total_class_list) {
@@ -505,21 +507,8 @@ void save() {
     out5.close();
 }
 void init() {
-    std::string dir;
-    {
-        char _tmp[256];
-        getcwd(_tmp, 256);
-        for (auto &c: _tmp) {
-            if (c == '\\')
-                c = '/';
-        }
-        std::string tmp(_tmp);
-        auto tmp_dir = tmp + "/data/";
-        if (0 != access(tmp_dir.c_str(), 0)) {
-            mkdir(tmp_dir.c_str());
-        }
-        dir = tmp_dir;
-    }
+    std::string dir = get_dir();
+
     std::ifstream in1(dir+"class_data.txt");
     if(in1.is_open()){
         int course_id;//课程代码
