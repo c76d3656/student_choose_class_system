@@ -16,8 +16,8 @@ int COURSE_LIST_NUMBER = 10001;
 const std::map<unsigned int, std::string> course_nature_list = {{1, "公共必修"},{2, "学科必修"},{3, "学科选修"},{4, "专业必修"},{5, "专业选修"},{6, "实践必修"},{7, "实践选修"}};
 //0是英语，1是数学，2是计算机专业
 std::vector<std::string> major_list = {"major"};
-std::map<unsigned int, ClassInformation*> total_class_list;
-std::map<unsigned int, Student*> total_student_list;
+std::map<long long, ClassInformation*> total_class_list;
+std::map<long long, Student*> total_student_list;
 
 //函数声明
 //课程
@@ -27,17 +27,17 @@ bool remove_class(const int &course_id);
 void class_list_show();
 void target_class_list_show(const int & course_id);
 void who_choose_this_class(const unsigned int &course_id);
-unsigned int how_many_student_choose_this_class(const unsigned int &course_id);
-unsigned int how_many_class();
+long long how_many_student_choose_this_class(const unsigned int &course_id);
+long long how_many_class();
 //学生
-bool new_student(const unsigned int &student_id, const std::string &student_name, bool gender, unsigned int ages, unsigned int major, unsigned int classroom_id, long long phone_number);
-bool remove_student(const unsigned int &student_id);
+bool new_student(const long long &student_id, const std::string &student_name, bool gender, unsigned int ages, unsigned int major, unsigned int classroom_id, long long phone_number);
+bool remove_student(const long long &student_id);
 void student_list_show();
-void target_student_show(const unsigned int &student_id);
-bool student_choose_class(const unsigned int &student_id, const int &course_id);
-bool student_remove_class(const unsigned int &student_id, const int &course_id);
-void student_change_information(const unsigned int &student_id);
-unsigned int how_many_student();
+void target_student_show(const long long &student_id);
+bool student_choose_class(const long long &student_id, const int &course_id);
+bool student_remove_class(const long long &student_id, const int &course_id);
+void student_change_information(const long long &student_id);
+long long how_many_student();
 //专业操作
 unsigned int new_major(const std::string & major_name);
 void major_list_show();
@@ -55,10 +55,11 @@ public:
     unsigned int credits;//学分
     unsigned int semester;//开课学期
     unsigned int choose_number;//选修人数
-    std::map<unsigned int, std::string> choose_student_list;//选该门课的学生列表
+    std::map<long long, std::string> choose_student_list;//选该门课的学生列表
 
     ClassInformation(const std::string &Course_name, unsigned int Course_nature, unsigned int Total_hours, unsigned int Credits, unsigned int Semester) {
         course_id = class_id_create(Course_name);
+        course_name=Course_name;
         course_nature = course_nature_list.find(Course_nature)->second;
         total_hours = Total_hours;
         credits = Credits;
@@ -89,7 +90,7 @@ public:
 };
 class Student {
 private:
-    unsigned int student_id;
+    long long student_id;
     std::string student_name;
     bool gender;//1为男0为女
     unsigned int age;
@@ -101,7 +102,7 @@ private:
 public:
     friend void save();
     friend void init();
-    Student(unsigned int Student_id, const std::string &Student_name, bool Gender, unsigned int Years,
+    Student(long long Student_id, const std::string &Student_name, bool Gender, unsigned int Years,
             unsigned int Major, unsigned int Classroom_id, long long Phone_number) {
         student_id = Student_id;
         student_name = Student_name;
@@ -112,7 +113,7 @@ public:
         phone_number = Phone_number;
     }
 
-    Student(unsigned int Student_id, const std::string &Student_name, bool Gender, unsigned int Years,
+    Student(long long Student_id, const std::string &Student_name, bool Gender, unsigned int Years,
             std::string Major, unsigned int Classroom_id, long long Phone_number) {
         student_id = Student_id;
         student_name = Student_name;
@@ -251,7 +252,7 @@ public:
     }
 
     void detail_show() const {
-        printf("\t%d\t%s\t%s\t%d\t%lld\t%d\t%s\n", this->student_id, this->student_name.c_str(),
+        printf("\t%lld\t%s\t%s\t%d\t%lld\t%lld\t%s\n", this->student_id, this->student_name.c_str(),
                this->major.c_str(), this->classroom_id, this->phone_number, this->age,
                (this->gender ? "man" : "girl"));
     }
@@ -326,17 +327,17 @@ void who_choose_this_class(const unsigned int &course_id) {
     course->second->choose_student_show();
     printf("the end\n");
 }
-unsigned int how_many_student_choose_this_class(const unsigned int &course_id) {
-    unsigned int number = total_class_list.size();
+long long how_many_student_choose_this_class(const long long &course_id) {
+    long long number = total_class_list.size();
     return number;
 }
-unsigned int how_many_class() {
-    unsigned int number = total_class_list.size();
+long long how_many_class() {
+    long long number = total_class_list.size();
     printf("there are %d class", number);
     return number;
 }
 //学生
-bool new_student(const unsigned int &student_id, const std::string &student_name, bool gender, unsigned int ages, unsigned int major, unsigned int classroom_id, long long phone_number) {
+bool new_student(const long long &student_id, const std::string &student_name, bool gender, unsigned int ages, unsigned int major, unsigned int classroom_id, long long phone_number) {
     if (total_student_list.count(student_id)) {
         printf("student id have existed\n");
         return false;
@@ -345,7 +346,7 @@ bool new_student(const unsigned int &student_id, const std::string &student_name
     total_student_list.insert({student_id, tmp_student});
     return true;
 }
-bool remove_student(const unsigned int &student_id) {
+bool remove_student(const long long &student_id) {
     auto stu=total_student_list.find(student_id);
     if(stu != total_student_list.end()){
         auto student = stu->second;
@@ -366,7 +367,7 @@ void student_list_show() {
         s.second->detail_show();
     }
 }
-void target_student_show(const unsigned int &student_id){
+void target_student_show(const long long &student_id){
     printf("\tstudent id\tstudent name\tmajor\tclassroom\tphone number\tage\tgender\n");
 
     const auto &s = total_student_list.find(student_id);\
@@ -378,7 +379,7 @@ void target_student_show(const unsigned int &student_id){
     }
 
 }
-bool student_choose_class(const unsigned int &student_id, const int &course_id) {
+bool student_choose_class(const long long &student_id, const int &course_id) {
     auto s = total_student_list.find(student_id);
     if (s == total_student_list.end()) {
         printf("student id is wrong\n");
@@ -399,7 +400,7 @@ bool student_choose_class(const unsigned int &student_id, const int &course_id) 
         return false;
     }
 }
-bool student_remove_class(const unsigned int &student_id, const int &course_id) {
+bool student_remove_class(const long long &student_id, const int &course_id) {
     auto s = total_student_list.find(student_id);
     if (s == total_student_list.end()) {
         printf("student id is wrong\n");
@@ -420,7 +421,7 @@ bool student_remove_class(const unsigned int &student_id, const int &course_id) 
         return false;
     }
 }
-void student_change_information(const unsigned int &student_id) {
+void student_change_information(const long long &student_id) {
     auto s = total_student_list.find(student_id);
     if (s == total_student_list.end()) {
         printf("student id is wrong\n");
@@ -428,8 +429,8 @@ void student_change_information(const unsigned int &student_id) {
     }
     s->second->change_info();
 }
-unsigned int how_many_student() {
-    unsigned int number = total_student_list.size();
+long long how_many_student() {
+    long long number = total_student_list.size();
     printf("there are %d students", number);
     return number;
 }
@@ -523,8 +524,8 @@ void init() {
             auto *temp_class = new ClassInformation(course_id, course_name, course_nature, total_hours, credits, semester, choose_number);
             std::ifstream in2(dir+"class_choose_student_" + std::to_string(course_id) + ".txt");
             if(in2.is_open()){
-                std::map<unsigned int, std::basic_string<char>> list;
-                unsigned int student_id;
+                std::map<long long, std::basic_string<char>> list;
+                long long student_id;
                 std::string student_name;
                 while (in2 >> student_id >> student_name) {
                     list.insert({student_id, student_name});
@@ -538,7 +539,7 @@ void init() {
     }
     std::ifstream in3(dir+"student_data.txt");
     if(in3.is_open()){
-        unsigned int student_id;
+        long long student_id;
         std::string student_name;
         bool gender;
         unsigned int years;
@@ -622,7 +623,6 @@ void welcome(){
 
 int main() {
     init();
-
     while (true){
         welcome();
         int choice;
@@ -644,7 +644,7 @@ int main() {
                 std::cout<<"input id,name,gender ,age,major,classroom_id,phone number "<<std::endl;
                 std::cout<<"gender 1 is man,0 is girl."<<std::endl;
                 major_list_show();
-                unsigned int student_id;
+                long long student_id;
                 std::string student_name;
                 bool gender;
                 unsigned int years;
