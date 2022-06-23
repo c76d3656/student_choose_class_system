@@ -27,9 +27,7 @@ void ClassInformation::class_show() const {
            this->semester, this->choose_number);
 }
 
-ClassInformation::ClassInformation(int Course_id, const std::string &Course_name, std::string Course_nature,
-                                   unsigned int Total_hours, unsigned int Credits, unsigned int Semester,
-                                   unsigned int Choose_number) {
+ClassInformation::ClassInformation(int Course_id, const std::string &Course_name, std::string Course_nature,unsigned int Total_hours, unsigned int Credits, unsigned int Semester,unsigned int Choose_number) {
     course_id = Course_id;
     course_name = Course_name;
     course_nature = std::move(Course_nature);
@@ -39,8 +37,7 @@ ClassInformation::ClassInformation(int Course_id, const std::string &Course_name
     choose_number = Choose_number;
 }
 
-ClassInformation::ClassInformation(const std::string &Course_name, unsigned int Course_nature, unsigned int Total_hours,
-                                   unsigned int Credits, unsigned int Semester) {
+ClassInformation::ClassInformation(const std::string &Course_name, unsigned int Course_nature, unsigned int Total_hours,unsigned int Credits, unsigned int Semester) {
     course_id = class_id_create(Course_name);
     course_name = Course_name;
     course_nature = course_nature_list.find(Course_nature)->second;

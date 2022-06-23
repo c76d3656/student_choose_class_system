@@ -9,7 +9,6 @@
 #include <map>
 #include <iostream>
 #include <vector>
-
 #pragma once
 
 class Student {
@@ -29,22 +28,22 @@ public:
     friend void init();
 
     Student(long long Student_id, const std::string &Student_name, bool Gender, unsigned int Years,
-            unsigned int Major, unsigned int Classroom_id, long long Phone_number);
+            unsigned int Major, unsigned int Classroom_id, long long Phone_number) ;
 
     Student(long long Student_id, const std::string &Student_name, bool Gender, unsigned int Years,
-            std::string Major, unsigned int Classroom_id, long long Phone_number);
+            std::string Major, unsigned int Classroom_id, long long Phone_number) ;
 
-    bool choose_class(const int &course_id);
+    bool choose_class(const int &course_id) ;
 
-    bool remove_class(const int &course_id);
+    bool remove_class(const int &course_id) ;
 
-    void choose_class_list_show();
+    void choose_class_list_show() ;
 
     void change_info();
 
-    void detail_show() const;
+    void detail_show() const ;
 
-    std::map<int, std::string> get_class_list();
+    std::map<int, std::string> get_class_list() ;
 };
 
 extern std::vector<std::string> major_list;

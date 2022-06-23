@@ -5,7 +5,7 @@
 //变量定义与声明
 //公共必修、学科必修、学科选修、专业必修 、专业选修、实践必修、实践选修
 std::map<unsigned int, std::string> course_nature_list = {{1, "公共必修"},{2, "学科必修"},{3, "学科选修"},{4, "专业必修"},{5, "专业选修"},{6, "实践必修"},{7, "实践选修"}};
-int COURSE_LIST_NUMBER = 10001;
+int COURSE_LIST_NUMBER=10001;
 //0是英语，1是数学，2是计算机专业
 std::vector<std::string> major_list = {"major"};
 std::map<long long, ClassInformation *> total_class_list;
@@ -55,11 +55,11 @@ void major_list_show();
 
 //交互功能
 void welcome();
-
 void dropInput();
 
 //函数操作
 //课程
+
 bool remove_class(const int &course_id) {
     auto cour = total_class_list.find(course_id);
     if (cour != total_class_list.end()) {
@@ -365,8 +365,8 @@ void init() {
     if (in5.is_open()) {
         std::string tmp_major;
         while (in5 >> tmp_major) {
-            for (const auto &tmp: major_list) {
-                if (tmp_major == tmp) {
+            for(const auto& tmp : major_list){
+                if(tmp_major == tmp){
                     continue;
                 }
             }
@@ -378,8 +378,8 @@ void init() {
     if (!total_class_list.empty()) {
         auto last = --total_class_list.end();
         COURSE_LIST_NUMBER = last->first + 1;
-    } else {
-        COURSE_LIST_NUMBER = 10001;
+    } else{
+        COURSE_LIST_NUMBER=10001;
     }
     //初始化in表
     {
@@ -410,16 +410,14 @@ unsigned int new_major(const std::string &major_name) {
         return major_list.size() - 1;
     }
 }
-
 void major_list_show() {
-    int i = 0;
+    int i=0;
     for (const auto &major: major_list) {
-        std::cout << i << ":" << major << " ";
+        std::cout <<i<<":"<< major << " ";
         ++i;
     }
     printf("\n");
 }
-
 //课程性质操作
 void course_nature_list_show() {
     for (const auto &i: course_nature_list) {
@@ -428,7 +426,7 @@ void course_nature_list_show() {
     printf("\n");
 }
 
-//主题交互操作
+
 void welcome() {
     system("cls");
     std::cout << "1. show all class" << std::endl;
@@ -446,7 +444,6 @@ void welcome() {
     std::cout << "13. new major" << std::endl;
     std::cout << "0. save and exit" << std::endl;
 }
-
 unsigned long long input_solution(const std::string &a) {
     std::hash<std::string> str_hash;
     auto _hash = in.find(str_hash(a));
@@ -457,7 +454,6 @@ unsigned long long input_solution(const std::string &a) {
     }
 }
 
-//清楚多余的缓冲区中输入
 void dropInput() {
     while (std::cin && std::cin.get() != '\n')continue;
     std::cin.clear();
@@ -494,11 +490,11 @@ int main() {
                 unsigned int classroom_id;
                 long long phone_number;
                 std::cin >> student_id >> student_name >> gender >> years >> major >> classroom_id >> phone_number;
-                if (!std::cin) {
+                if(!std::cin){
                     dropInput();
                     break;
                 }
-                if (major < 0 && major > major_list.size() - 1) {
+                if(major<0&&major>major_list.size()-1){
                     dropInput();
                     break;
                 }
@@ -521,11 +517,11 @@ int main() {
                 unsigned int credits;//学分
                 unsigned int semester;//开课学期
                 std::cin >> course_name >> course_nature >> total_hours >> credits >> semester;
-                if (!std::cin) {
+                if(!std::cin){
                     dropInput();
                     break;
                 }
-                if (course_nature < 0 && course_nature > course_nature_list.size() - 1) {
+                if(course_nature<0&&course_nature>course_nature_list.size()-1){
                     dropInput();
                     break;
                 }
@@ -542,7 +538,7 @@ int main() {
                 std::cout << "target class_id" << std::endl;
                 int class_id;
                 std::cin >> class_id;
-                if (!std::cin) {
+                if(!std::cin){
                     dropInput();
                     break;
                 }
@@ -556,7 +552,7 @@ int main() {
                 std::cout << "target student_id" << std::endl;
                 long long student_id;
                 std::cin >> student_id;
-                if (!std::cin) {
+                if(!std::cin){
                     dropInput();
                     break;
                 }
@@ -570,7 +566,7 @@ int main() {
                 std::cout << "target class_id" << std::endl;
                 int class_id;
                 std::cin >> class_id;
-                if (!std::cin) {
+                if(!std::cin){
                     dropInput();
                     break;
                 }
@@ -587,7 +583,7 @@ int main() {
                 std::cout << "target student_id" << std::endl;
                 long long student_id;
                 std::cin >> student_id;
-                if (!std::cin) {
+                if(!std::cin){
                     dropInput();
                     break;
                 }
@@ -604,7 +600,7 @@ int main() {
                 std::cout << "target student_id" << std::endl;
                 long long student_id;
                 std::cin >> student_id;
-                if (!std::cin) {
+                if(!std::cin){
                     dropInput();
                     break;
                 }
@@ -623,7 +619,7 @@ int main() {
                 std::cout << "please input student_id and chosen_course_id" << std::endl;
                 long long student_id, course_id;
                 std::cin >> student_id >> course_id;
-                if (!std::cin) {
+                if(!std::cin){
                     dropInput();
                     break;
                 }
@@ -636,7 +632,7 @@ int main() {
                 std::cout << "please input student_id and chosen_course_id" << std::endl;
                 long long student_id, course_id;
                 std::cin >> student_id >> course_id;
-                if (!std::cin) {
+                if(!std::cin){
                     dropInput();
                     break;
                 }
@@ -648,7 +644,7 @@ int main() {
                 std::cout << "please input new major name" << std::endl;
                 std::string tmp_major;
                 std::cin >> tmp_major;
-                if (!std::cin) {
+                if(!std::cin){
                     dropInput();
                     break;
                 }
