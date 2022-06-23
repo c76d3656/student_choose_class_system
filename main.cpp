@@ -74,6 +74,7 @@ void major_list_show();
 
 //交互功能
 void welcome();
+void dropInput();
 
 
 //类的定义
@@ -102,6 +103,7 @@ public:
     ClassInformation(int Course_id, const std::string &Course_name, std::string Course_nature, unsigned int Total_hours,
                      unsigned int Credits, unsigned int Semester, unsigned int Choose_number) {
         course_id = Course_id;
+        course_name = Course_name;
         course_nature = std::move(Course_nature);
         total_hours = Total_hours;
         credits = Credits;
@@ -189,7 +191,7 @@ public:
     }
 
     void choose_class_list_show() {
-        printf("he choose this class\n");
+        printf("student choose this class\n");
         printf("\tclass_is\tclass_name\n");
         for (auto &it: choose_class_list) {
             printf("\t%d\t%s\n", it.first, it.second.c_str());
@@ -198,7 +200,7 @@ public:
     }
 
     void change_info() {
-        printf("input something if change，or Enter to jump it");
+        printf("input something if change，or Enter to jump it\n");
         //修改学号(禁止)
 //        printf("change student id as:  ");
 //        {
@@ -218,9 +220,19 @@ public:
 //        }
         //修改姓名
         printf("change student name as:  ");
-        {
+        [&](){
             std::string tmp_string;
-            std::cin >> tmp_string;
+            if(std::cin >> tmp_string){
+                if(std::cin.get()=='\n'){
+                    return ;
+                }
+                if(!std::cin){
+                    dropInput();
+                    return;
+                }
+                dropInput();
+            }
+
             if (!tmp_string.empty()) {
                 this->student_name = tmp_string;
                 {
@@ -232,13 +244,22 @@ public:
                 }
                 printf("change student name success!\n");
             }
-        }
+        }();
         //修改性别
         printf("1 is man,0 is girl\n");
         printf("change student gender as:  ");
-        {
+        [&](){
             int tmp_gender = -1;
-            std::cin >> tmp_gender;
+            if(std::cin >> tmp_gender){
+                if(std::cin.get()=='\n'){
+                    return;
+                }
+                if(!std::cin){
+                    dropInput();
+                    return;
+                }
+                dropInput();
+            }
             if (tmp_gender == 1) {
                 this->gender = true;
                 printf("change student gender success!\n");
@@ -246,44 +267,88 @@ public:
                 this->gender = false;
                 printf("change student gender success!\n");
             }
-        }
+        }();
         //修改年龄
         printf("change student age as:  ");
-        {
-            int tmp_int = -1;
-            std::cin >> tmp_int;
+        [&](){
+            double tmp_dou = -1;
+            if(std::cin >> tmp_dou){
+                if(std::cin.get()=='\n'){
+                    return;
+                }
+                if(!std::cin){
+                    dropInput();
+                    return;
+                }
+                dropInput();
+            }
+            int tmp_int = (int)tmp_dou;
             if (tmp_int > 0) {
                 this->age = tmp_int;
                 printf("change student age success!\n");
             } else if (tmp_int == 0) {
                 printf("hey hey hey guys.He or she is a baby?\n");
             }
-        }
+        }();
         //修改系别
         printf("change student major as:  ");
-        {
-            //I haven't done the major system
-        }
+        [&](){
+            major_list_show();
+            int tmp_int = -1;
+            if(std::cin >> tmp_int){
+                if(std::cin.get()=='\n'){
+                    return;
+                }
+                if(!std::cin){
+                    dropInput();
+                    return;
+                }
+                dropInput();
+            }
+            if(tmp_int>=0&&tmp_int<major_list.size()-1){
+                this->major=major_list[tmp_int];
+            } else{
+                printf("this major isn't exist");
+            }
+        }();
         //修改班级
         printf("change student classroom id as:  ");
-        {
+        [&](){
             int tmp_int = -1;
-            std::cin >> tmp_int;
+            if(std::cin >> tmp_int){
+                if(std::cin.get()=='\n'){
+                    return;
+                }
+                if(!std::cin){
+                    dropInput();
+                    return;
+                }
+                dropInput();
+            }
             if (tmp_int > 0) {
                 this->classroom_id = tmp_int;
                 printf("change student classroom id success!\n");
             }
-        }
+        }();
         //修改联系方式
         printf("change student phone number as:  ");
-        {
+        [&](){
             long long tmp_int = -1;
-            std::cin >> tmp_int;
+            if(std::cin >> tmp_int){
+                if(std::cin.get()=='\n'){
+                    return;
+                }
+                if(!std::cin){
+                    dropInput();
+                    return;
+                }
+                dropInput();
+            }
             if (tmp_int > 0) {
                 this->phone_number = tmp_int;
                 printf("change student phone number success!\n");
             }
-        }
+        }();
 
     }
 
@@ -359,9 +424,11 @@ void target_class_list_show(const int &course_id) {
     if (course != total_class_list.end()) {
         printf("\tclass id\tclass name\tclass nature\ttotal hour\tcredit\tsemester\tchoose number\n");
         course->second->class_show();
+        who_choose_this_class(course_id);
+        printf("the end\n");
+        return;
     }
-    who_choose_this_class(course_id);
-    printf("the end\n");
+    printf("error");
 }
 
 void who_choose_this_class(const unsigned int &course_id) {
@@ -378,7 +445,7 @@ long long how_many_student_choose_this_class(const long long &course_id) {
 
 long long how_many_class() {
     long long number = total_class_list.size();
-    printf("there are %lld class", number);
+//    printf("there are %lld class", number);
     return number;
 }
 
@@ -418,15 +485,14 @@ void student_list_show() {
 }
 
 void target_student_show(const long long &student_id) {
-    printf("\tstudent id\tstudent name\tmajor\tclassroom\tphone number\tage\tgender\n");
-
-    const auto &s = total_student_list.find(student_id); \
-        if (s != total_student_list.end()) {
+    const auto &s = total_student_list.find(student_id);
+    if (s != total_student_list.end()) {
+        printf("\tstudent id\tstudent name\tmajor\tclassroom\tphone number\tage\tgender\n");
         s->second->detail_show();
+        s->second->choose_class_list_show();
     } else {
         printf("error");
     }
-
 }
 
 bool student_choose_class(const long long &student_id, const int &course_id) {
@@ -484,7 +550,7 @@ void student_change_information(const long long &student_id) {
 
 long long how_many_student() {
     long long number = total_student_list.size();
-    printf("there are %lld students", number);
+//    printf("there are %lld students", number);
     return number;
 }
 
@@ -618,12 +684,17 @@ void init() {
     if (in5.is_open()) {
         std::string tmp_major;
         while (in5 >> tmp_major) {
+            for(const auto& tmp : major_list){
+                if(tmp_major == tmp){
+                    continue;
+                }
+            }
             major_list.push_back(tmp_major);
         }
         in5.close();
     }
     //初始化时更改COURSE_ID
-    if (total_class_list.size() != 0) {
+    if (!total_class_list.empty()) {
         auto last = --total_class_list.end();
         COURSE_LIST_NUMBER = last->first + 1;
     }
@@ -658,8 +729,10 @@ unsigned int new_major(const std::string &major_name) {
 }
 
 void major_list_show() {
+    int i=0;
     for (const auto &major: major_list) {
-        std::cout << major << " ";
+        std::cout <<i<<":"<< major << " ";
+        ++i;
     }
     printf("\n");
 }
@@ -701,6 +774,11 @@ unsigned long long input_solution(const std::string &a) {
     }
 }
 
+void dropInput() {
+    while (std::cin && std::cin.get() != '\n')continue;
+    std::cin.clear();
+}
+
 int main() {
     init();
     while (true) {
@@ -732,6 +810,15 @@ int main() {
                 unsigned int classroom_id;
                 long long phone_number;
                 std::cin >> student_id >> student_name >> gender >> years >> major >> classroom_id >> phone_number;
+                if(!std::cin){
+                    dropInput();
+                    break;
+                }
+                if(major<0&&major>major_list.size()-1){
+                    dropInput();
+                    break;
+                }
+                dropInput();
                 if (new_student(student_id, student_name, gender, years, major, classroom_id, phone_number)) {
                     printf("success");
                 }
@@ -750,6 +837,15 @@ int main() {
                 unsigned int credits;//学分
                 unsigned int semester;//开课学期
                 std::cin >> course_name >> course_nature >> total_hours >> credits >> semester;
+                if(!std::cin){
+                    dropInput();
+                    break;
+                }
+                if(course_nature<0&&course_nature>course_nature_list.size()-1){
+                    dropInput();
+                    break;
+                }
+                dropInput();
                 if (new_class(course_name, course_nature, total_hours, credits, semester)) {
                     printf("success");
                 }
@@ -762,6 +858,11 @@ int main() {
                 std::cout << "target class_id" << std::endl;
                 int class_id;
                 std::cin >> class_id;
+                if(!std::cin){
+                    dropInput();
+                    break;
+                }
+                dropInput();
                 target_class_list_show(class_id);
                 system("pause");
                 break;
@@ -771,6 +872,11 @@ int main() {
                 std::cout << "target student_id" << std::endl;
                 long long student_id;
                 std::cin >> student_id;
+                if(!std::cin){
+                    dropInput();
+                    break;
+                }
+                dropInput();
                 target_student_show(student_id);
                 system("pause");
                 break;
@@ -780,6 +886,11 @@ int main() {
                 std::cout << "target class_id" << std::endl;
                 int class_id;
                 std::cin >> class_id;
+                if(!std::cin){
+                    dropInput();
+                    break;
+                }
+                dropInput();
                 if (remove_class(class_id)) {
                     printf("success");
                 }
@@ -792,6 +903,11 @@ int main() {
                 std::cout << "target student_id" << std::endl;
                 long long student_id;
                 std::cin >> student_id;
+                if(!std::cin){
+                    dropInput();
+                    break;
+                }
+                dropInput();
                 if (remove_student(student_id)) {
                     printf("success");
                 }
@@ -804,6 +920,11 @@ int main() {
                 std::cout << "target student_id" << std::endl;
                 long long student_id;
                 std::cin >> student_id;
+                if(!std::cin){
+                    dropInput();
+                    break;
+                }
+                dropInput();
                 student_change_information(student_id);
                 break;
             }
@@ -818,6 +939,11 @@ int main() {
                 std::cout << "please input student_id and chosen_course_id" << std::endl;
                 long long student_id, course_id;
                 std::cin >> student_id >> course_id;
+                if(!std::cin){
+                    dropInput();
+                    break;
+                }
+                dropInput();
                 printf("input success");
                 student_choose_class(student_id, course_id);
                 break;
@@ -826,12 +952,23 @@ int main() {
                 std::cout << "please input student_id and chosen_course_id" << std::endl;
                 long long student_id, course_id;
                 std::cin >> student_id >> course_id;
+                if(!std::cin){
+                    dropInput();
+                    break;
+                }
+                dropInput();
                 student_remove_class(student_id, course_id);
                 break;
             }
             case 13: {
                 std::cout << "please input new major name" << std::endl;
                 std::string tmp_major;
+                std::cin >> tmp_major;
+                if(!std::cin){
+                    dropInput();
+                    break;
+                }
+                dropInput();
                 if (!tmp_major.empty()) {
                     new_major(tmp_major);
                     break;
@@ -844,8 +981,9 @@ int main() {
             }
             default: {
                 printf("error input");
+                dropInput();
                 system("pause");
-                break;
+                continue;
             }
         }
     }
