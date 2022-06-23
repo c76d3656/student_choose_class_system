@@ -4,6 +4,7 @@
 #include <map>
 #include <utility>
 #include <vector>
+#include <functional>
 #include <direct.h>
 #include <io.h>
 
@@ -26,6 +27,7 @@ const std::map<unsigned int, std::string> course_nature_list = {{1, "公共必�
 std::vector<std::string> major_list = {"major"};
 std::map<long long, ClassInformation *> total_class_list;
 std::map<long long, Student *> total_student_list;
+std::map<unsigned long long, int> in;
 
 //函数声明
 //课程
@@ -625,6 +627,24 @@ void init() {
         auto last = --total_class_list.end();
         COURSE_LIST_NUMBER = last->first + 1;
     }
+    //初始化in表
+    {
+        std::hash<std::string> str_hash;
+        in.insert({str_hash("1"), 1});
+        in.insert({str_hash("2"), 2});
+        in.insert({str_hash("3"), 3});
+        in.insert({str_hash("4"), 4});
+        in.insert({str_hash("5"), 5});
+        in.insert({str_hash("6"), 6});
+        in.insert({str_hash("7"), 7});
+        in.insert({str_hash("8"), 8});
+        in.insert({str_hash("9"), 9});
+        in.insert({str_hash("10"), 10});
+        in.insert({str_hash("11"), 11});
+        in.insert({str_hash("12"), 12});
+        in.insert({str_hash("13"), 13});
+        in.insert({str_hash("0"), 0});
+    }
 }
 
 //专业操作
@@ -671,12 +691,23 @@ void welcome() {
 }
 
 
+unsigned long long input_solution(const std::string &a) {
+    std::hash<std::string> str_hash;
+    auto _hash = in.find(str_hash(a));
+    if (_hash != in.end()) {
+        return _hash->second;
+    } else {
+        return 100;
+    }
+}
+
 int main() {
     init();
     while (true) {
         welcome();
-        int choice;
-        std::cin >> choice;
+        std::string _str;
+        std::cin >> _str;
+        auto choice = input_solution(_str);
         switch (choice) {
             case 1:
                 system("cls");
@@ -738,7 +769,7 @@ int main() {
             case 6: {
                 system("cls");
                 std::cout << "target student_id" << std::endl;
-                int student_id;
+                long long student_id;
                 std::cin >> student_id;
                 target_student_show(student_id);
                 system("pause");
@@ -759,7 +790,7 @@ int main() {
             case 8: {
                 system("cls");
                 std::cout << "target student_id" << std::endl;
-                int student_id;
+                long long student_id;
                 std::cin >> student_id;
                 if (remove_student(student_id)) {
                     printf("success");
@@ -771,9 +802,10 @@ int main() {
             case 9: {
                 system("cls");
                 std::cout << "target student_id" << std::endl;
-                int student_id;
+                long long student_id;
                 std::cin >> student_id;
                 student_change_information(student_id);
+                break;
             }
             case 10: {
                 system("cls");
@@ -784,15 +816,18 @@ int main() {
             }
             case 11: {
                 std::cout << "please input student_id and chosen_course_id" << std::endl;
-                int student_id, course_id;
+                long long student_id, course_id;
                 std::cin >> student_id >> course_id;
+                printf("input success");
                 student_choose_class(student_id, course_id);
+                break;
             }
             case 12: {
                 std::cout << "please input student_id and chosen_course_id" << std::endl;
-                int student_id, course_id;
+                long long student_id, course_id;
                 std::cin >> student_id >> course_id;
                 student_remove_class(student_id, course_id);
+                break;
             }
             case 13: {
                 std::cout << "please input new major name" << std::endl;
