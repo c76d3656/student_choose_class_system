@@ -1,6 +1,7 @@
 #include "head.h"
 #include "ClassInfor.h"
 #include "Student.h"
+#include<Windows.h>
 
 //变量定义与声明
 //公共必修、学科必修、学科选修、专业必修 、专业选修、实践必修、实践选修
@@ -69,10 +70,10 @@ bool remove_class(const int &course_id) {
             student->second->remove_class(course_id);
         }
         total_class_list.erase(course_id);
-        printf("remove %d success\n", course_id);
+        printf("删除 %lld 号课程成功\n", course_id);
         return true;
     } else {
-        printf("remove %d fail\n", course_id);
+        printf("删除 %lld 号课程失败\n", course_id);
         return false;
     }
 }
@@ -82,7 +83,7 @@ new_class(const std::string &Course_name, unsigned int Course_nature, unsigned i
           unsigned int Semester) {
     auto *tmp_class = new ClassInformation(Course_name, Course_nature, Total_hours, Credits, Semester);
     if (tmp_class->course_id == -1) {
-        printf("new class error,can't not add total_class_list\n");
+        printf("新增课程有误，添加失败\n");
         delete (tmp_class);
         return false;
     } else {
@@ -92,7 +93,7 @@ new_class(const std::string &Course_name, unsigned int Course_nature, unsigned i
 }
 
 void class_list_show() {
-    printf("\tclass id\tclass name\tclass nature\ttotal hour\tcredit\tsemester\tchoose number\n");
+    printf("\t课程代号\t课程名字\t课程性质\t全部学时\t学分\t开设学期\t选修人数\n");
     for (const auto &course: total_class_list) {
         const auto &course_data = course.second;
         course_data->class_show();
@@ -103,7 +104,7 @@ void class_list_show() {
 void target_class_list_show(const int &course_id) {
     const auto &course = total_class_list.find(course_id);
     if (course != total_class_list.end()) {
-        printf("\tclass id\tclass name\tclass nature\ttotal hour\tcredit\tsemester\tchoose number\n");
+        printf("\t课程代号\t课程名字\t课程性质\t全部学时\t学分\t开设学期\t选修人数\n");
         course->second->class_show();
         who_choose_this_class(course_id);
         printf("the end\n");
@@ -114,7 +115,7 @@ void target_class_list_show(const int &course_id) {
 
 void who_choose_this_class(const unsigned int &course_id) {
     auto course = total_class_list.find(course_id);
-    printf("choose %s 's student\t\tstudent id\tstudent name\n", course->second->course_name.c_str());
+    printf("输入学生的\t\t学号\t姓名\n", course->second->course_name.c_str());
     course->second->choose_student_show();
     printf("the end\n");
 }
@@ -134,7 +135,7 @@ long long how_many_class() {
 bool new_student(const long long &student_id, const std::string &student_name, bool gender, unsigned int ages,
                  unsigned int major, unsigned int classroom_id, long long phone_number) {
     if (total_student_list.count(student_id)) {
-        printf("student id have existed\n");
+        printf("学生学号已经存在，创建失败\n");
         return false;
     }
     auto *tmp_student = new Student(student_id, student_name, gender, ages, major, classroom_id, phone_number);
@@ -150,16 +151,16 @@ bool remove_student(const long long &student_id) {
             student->remove_class(course_id.first);
         }
         total_student_list.erase(student_id);
-        printf("remove %lld success\n", student_id);
+        printf("删除 %lld 号学生成功\n", student_id);
         return true;
     } else {
-        printf("remove %lld fail,this student isn't exist\n", student_id);
+        printf("删除失败，这个学生不存在\n", student_id);
         return false;
     }
 }
 
 void student_list_show() {
-    printf("\tstudent id\tstudent name\tmajor\tclassroom\tphone number\tage\tgender\n");
+    printf("\t学生学号\t学生姓名\t专业\t班级\t电话号码\t年龄\t性别\n");
     for (const auto &s: total_student_list) {
         s.second->detail_show();
     }
@@ -168,27 +169,27 @@ void student_list_show() {
 void target_student_show(const long long &student_id) {
     const auto &s = total_student_list.find(student_id);
     if (s != total_student_list.end()) {
-        printf("\tstudent id\tstudent name\tmajor\tclassroom\tphone number\tage\tgender\n");
+        printf("\t学生学号\t学生姓名\t专业\t班级\t电话号码\t年龄\t性别\n");
         s->second->detail_show();
         s->second->choose_class_list_show();
     } else {
-        printf("error");
+        printf("错误");
     }
 }
 
 bool student_choose_class(const long long &student_id, const int &course_id) {
     auto s = total_student_list.find(student_id);
     if (s == total_student_list.end()) {
-        printf("student id is wrong\n");
+        printf("学生学号错误\n");
         return false;
     }
     if (!total_class_list.count(course_id)) {
-        printf("this class id is wrong\n");
+        printf("课程代号错误\n");
         return false;
     }
     auto student = s->second;
     if (student->get_class_list().count(course_id)) {
-        printf("have chosen\n");
+        printf("已经选择\n");
         return true;
     }
     if (student->choose_class(course_id)) {
@@ -201,16 +202,16 @@ bool student_choose_class(const long long &student_id, const int &course_id) {
 bool student_remove_class(const long long &student_id, const int &course_id) {
     auto s = total_student_list.find(student_id);
     if (s == total_student_list.end()) {
-        printf("student id is wrong\n");
+        printf("学生学号错误\n");
         return false;
     }
     if (!total_class_list.count(course_id)) {
-        printf("this class id is wrong\n");
+        printf("课程代号错误\n");
         return true;
     }
     auto student = s->second;
     if (!student->get_class_list().count(course_id)) {
-        printf("haven't chosen\n");
+        printf("未选择\n");
         return true;
     }
     if (student->remove_class(course_id)) {
@@ -223,7 +224,7 @@ bool student_remove_class(const long long &student_id, const int &course_id) {
 void student_change_information(const long long &student_id) {
     auto s = total_student_list.find(student_id);
     if (s == total_student_list.end()) {
-        printf("student id is wrong\n");
+        printf("学生学号错误\n");
         return;
     }
     s->second->change_info();
@@ -429,20 +430,31 @@ void course_nature_list_show() {
 
 void welcome() {
     system("cls");
-    std::cout << "1. show all class" << std::endl;
-    std::cout << "2. show all student" << std::endl;
-    std::cout << "3. new student" << std::endl;
-    std::cout << "4. new class" << std::endl;
-    std::cout << "5. show target class" << std::endl;
-    std::cout << "6. show target student" << std::endl;
-    std::cout << "7. remove class" << std::endl;
-    std::cout << "8. remove student" << std::endl;
-    std::cout << "9. change student information" << std::endl;
-    std::cout << "10. statistical function" << std::endl;
-    std::cout << "11. student choose course" << std::endl;
-    std::cout << "12. student remove course" << std::endl;
-    std::cout << "13. new major" << std::endl;
-    std::cout << "0. save and exit" << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_BLUE);//设置字体为蓝色
+    std::cout << "     ************************************************" << std::endl;
+    std::cout << "     **            欢迎使用学生选课系统            **" << std::endl;
+    std::cout << "     **                                            **" << std::endl;
+    std::cout << "     **          请输入你想执行的操作序号          **" << std::endl;
+    std::cout << "     **                                            **" << std::endl;
+    std::cout << "     **          1.显示所有的课程                  **" << std::endl;
+    std::cout << "     **          2.显示所有的学生                  **" << std::endl;
+    std::cout << "     **          3.新建一个学生                    **" << std::endl;
+    std::cout << "     **          4.新建一门课程                    **" << std::endl;
+    std::cout << "     **          5.显示所选的课程信息              **" << std::endl;
+    std::cout << "     **          6.显示所选的学生信息              **" << std::endl;
+    std::cout << "     **          7.删除一门课程                    **" << std::endl;
+    std::cout << "     **          8.删除一个学生                    **" << std::endl;
+    std::cout << "     **          9.更改学生信息                    **" << std::endl;
+    std::cout << "     **          10.显示所有课程数和所有学生人数   **" << std::endl;
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);//设置字体为红色
+    std::cout << "     **          11.学生选课                       **" << std::endl;
+    std::cout << "     **          12.学生退课                       **" << std::endl;
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_BLUE);//设置字体为蓝色
+    std::cout << "     **          13.创建新专业                     **" << std::endl;
+    std::cout << "     **          0.保存并退出                      **" << std::endl;
+    std::cout << "     ************************************************" << std::endl;
 }
 unsigned long long input_solution(const std::string &a) {
     std::hash<std::string> str_hash;
@@ -479,8 +491,12 @@ int main() {
                 break;
             case 3: {
                 system("cls");
-                std::cout << "input id,name,gender ,age,major,classroom_id,phone number " << std::endl;
-                std::cout << "gender 1 is man,0 is girl." << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE);//设置字体为紫色
+                std::cout << "请输入学号，姓名，性别，年龄，专业，班级，电话号码 " << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE);//设置字体为青色
+                std::cout << "性别请输入数字：1代表男性，0代表女性" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//设置字体为白色
+                std::cout<< "专业代号 ";
                 major_list_show();
                 long long student_id;
                 std::string student_name;
@@ -500,7 +516,7 @@ int main() {
                 }
                 dropInput();
                 if (new_student(student_id, student_name, gender, years, major, classroom_id, phone_number)) {
-                    printf("success");
+                    printf("成功");
                 }
                 save();
                 system("pause");
@@ -508,8 +524,11 @@ int main() {
             }
             case 4: {
                 system("cls");
-                std::cout << "input ,name,nature ,total hours ,credits,semester " << std::endl;
-                std::cout << "course_nature is number" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE);//设置字体为紫色
+                std::cout << "请输入课程名字，课程性质，总学时，学分，开设学期 " << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE);//设置字体为青色
+                std::cout << "注意：课程性质请输入数字" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//设置字体为白色
                 course_nature_list_show();
                 std::string course_name;//课程名称
                 int course_nature;//课程性质
@@ -527,7 +546,7 @@ int main() {
                 }
                 dropInput();
                 if (new_class(course_name, course_nature, total_hours, credits, semester)) {
-                    printf("success");
+                    printf("成功");
                 }
                 save();
                 system("pause");
@@ -535,7 +554,9 @@ int main() {
             }
             case 5: {
                 system("cls");
-                std::cout << "target class_id" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE);//设置字体为紫色
+                std::cout << "请输入课程代号" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//设置字体为白色
                 int class_id;
                 std::cin >> class_id;
                 if(!std::cin){
@@ -549,7 +570,9 @@ int main() {
             }
             case 6: {
                 system("cls");
-                std::cout << "target student_id" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE);//设置字体为紫色
+                std::cout << "请输入学生学号" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//设置字体为白色
                 long long student_id;
                 std::cin >> student_id;
                 if(!std::cin){
@@ -563,7 +586,9 @@ int main() {
             }
             case 7: {
                 system("cls");
-                std::cout << "target class_id" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE);//设置字体为紫色
+                std::cout << "请输入课程代号" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//设置字体为白色
                 int class_id;
                 std::cin >> class_id;
                 if(!std::cin){
@@ -572,7 +597,7 @@ int main() {
                 }
                 dropInput();
                 if (remove_class(class_id)) {
-                    printf("success");
+                    printf("成功");
                 }
                 save();
                 system("pause");
@@ -580,7 +605,9 @@ int main() {
             }
             case 8: {
                 system("cls");
-                std::cout << "target student_id" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE);//设置字体为紫色
+                std::cout << "请输入学生学号" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//设置字体为白色
                 long long student_id;
                 std::cin >> student_id;
                 if(!std::cin){
@@ -589,7 +616,7 @@ int main() {
                 }
                 dropInput();
                 if (remove_student(student_id)) {
-                    printf("success");
+                    printf("成功");
                 }
                 save();
                 system("pause");
@@ -597,7 +624,9 @@ int main() {
             }
             case 9: {
                 system("cls");
-                std::cout << "target student_id" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE);//设置字体为紫色
+                std::cout << "请输入学生学号" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//设置字体为白色
                 long long student_id;
                 std::cin >> student_id;
                 if(!std::cin){
@@ -610,13 +639,16 @@ int main() {
             }
             case 10: {
                 system("cls");
-                std::cout << "there are" << how_many_class() << std::endl;
-                std::cout << "there are" << how_many_student() << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//设置字体为白色
+                std::cout << "共有" << how_many_class() << "门课" << std::endl;
+                std::cout << "共有" << how_many_student() << "个学生" << std::endl;
                 system("pause");
                 break;
             }
             case 11: {
-                std::cout << "please input student_id and chosen_course_id" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE);//设置字体为紫色
+                std::cout << "请输入学生学号和所选课程代号" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//设置字体为白色
                 long long student_id, course_id;
                 std::cin >> student_id >> course_id;
                 if(!std::cin){
@@ -624,12 +656,14 @@ int main() {
                     break;
                 }
                 dropInput();
-                printf("input success");
+                printf("成功");
                 student_choose_class(student_id, course_id);
                 break;
             }
             case 12: {
-                std::cout << "please input student_id and chosen_course_id" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE);//设置字体为紫色
+                std::cout << "请输入学生学号和所选课程代号" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//设置字体为白色
                 long long student_id, course_id;
                 std::cin >> student_id >> course_id;
                 if(!std::cin){
@@ -641,7 +675,9 @@ int main() {
                 break;
             }
             case 13: {
-                std::cout << "please input new major name" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE);//设置字体为紫色
+                std::cout << "请输入新建专业名字" << std::endl;
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//设置字体为白色
                 std::string tmp_major;
                 std::cin >> tmp_major;
                 if(!std::cin){
@@ -660,7 +696,7 @@ int main() {
                 return 0;
             }
             default: {
-                printf("error input");
+                printf("输入错误");
                 dropInput();
                 system("pause");
                 continue;
