@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 #include <direct.h>
+#include <io.h>
 
 //类的声明
 class ClassInformation;
@@ -441,15 +442,15 @@ long long how_many_student() {
 //保存与读取初始化
 std::string get_dir(){
     char _tmp[256];
-    getcwd(_tmp,256);
+    _getcwd(_tmp,256);
     for(auto &c:_tmp){
         if(c=='\\')
             c='/';
     }
     std::string tmp(_tmp);
     auto tmp_dir = tmp+"/data/";
-    if(0 != access(tmp_dir.c_str(),0)){
-        mkdir(tmp_dir.c_str());
+    if(0 != _access(tmp_dir.c_str(),0)){
+        _mkdir(tmp_dir.c_str());
     }
     return tmp_dir;
 }
