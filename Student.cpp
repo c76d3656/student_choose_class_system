@@ -12,9 +12,9 @@ static void dropInput() {
 }
 
 static void major_list_show() {
-    int i=0;
+    int i = 0;
     for (const auto &major: major_list) {
-        std::cout <<i<<":"<< major << " ";
+        std::cout << i << ":" << major << " ";
         ++i;
     }
     printf("\n");
@@ -52,13 +52,13 @@ void Student::change_info() {
 //        }
     //修改姓名
     printf("change student name as:  ");
-    [&](){
+    [&]() {
         std::string tmp_string;
-        if(std::cin >> tmp_string){
-            if(std::cin.get()=='\n'){
-                return ;
+        if (std::cin >> tmp_string) {
+            if (std::cin.get() == '\n') {
+                return;
             }
-            if(!std::cin){
+            if (!std::cin) {
                 dropInput();
                 return;
             }
@@ -80,13 +80,13 @@ void Student::change_info() {
     //修改性别
     printf("1 is man,0 is girl\n");
     printf("change student gender as:  ");
-    [&](){
+    [&]() {
         int tmp_gender = -1;
-        if(std::cin >> tmp_gender){
-            if(std::cin.get()=='\n'){
+        if (std::cin >> tmp_gender) {
+            if (std::cin.get() == '\n') {
                 return;
             }
-            if(!std::cin){
+            if (!std::cin) {
                 dropInput();
                 return;
             }
@@ -102,19 +102,19 @@ void Student::change_info() {
     }();
     //修改年龄
     printf("change student age as:  ");
-    [&](){
+    [&]() {
         double tmp_dou = -1;
-        if(std::cin >> tmp_dou){
-            if(std::cin.get()=='\n'){
+        if (std::cin >> tmp_dou) {
+            if (std::cin.get() == '\n') {
                 return;
             }
-            if(!std::cin){
+            if (!std::cin) {
                 dropInput();
                 return;
             }
             dropInput();
         }
-        int tmp_int = (int)tmp_dou;
+        int tmp_int = (int) tmp_dou;
         if (tmp_int > 0) {
             this->age = tmp_int;
             printf("change student age success!\n");
@@ -124,34 +124,34 @@ void Student::change_info() {
     }();
     //修改系别
     printf("change student major as:  ");
-    [&](){
+    [&]() {
         major_list_show();
         int tmp_int = -1;
-        if(std::cin >> tmp_int){
-            if(std::cin.get()=='\n'){
+        if (std::cin >> tmp_int) {
+            if (std::cin.get() == '\n') {
                 return;
             }
-            if(!std::cin){
+            if (!std::cin) {
                 dropInput();
                 return;
             }
             dropInput();
         }
-        if(tmp_int>=0&&tmp_int<major_list.size()-1){
-            this->major=major_list[tmp_int];
-        } else{
+        if (tmp_int >= 0 && tmp_int < major_list.size() - 1) {
+            this->major = major_list[tmp_int];
+        } else {
             printf("this major isn't exist");
         }
     }();
     //修改班级
     printf("change student classroom id as:  ");
-    [&](){
+    [&]() {
         int tmp_int = -1;
-        if(std::cin >> tmp_int){
-            if(std::cin.get()=='\n'){
+        if (std::cin >> tmp_int) {
+            if (std::cin.get() == '\n') {
                 return;
             }
-            if(!std::cin){
+            if (!std::cin) {
                 dropInput();
                 return;
             }
@@ -164,13 +164,13 @@ void Student::change_info() {
     }();
     //修改联系方式
     printf("change student phone number as:  ");
-    [&](){
+    [&]() {
         long long tmp_int = -1;
-        if(std::cin >> tmp_int){
-            if(std::cin.get()=='\n'){
+        if (std::cin >> tmp_int) {
+            if (std::cin.get() == '\n') {
                 return;
             }
-            if(!std::cin){
+            if (!std::cin) {
                 dropInput();
                 return;
             }
@@ -221,7 +221,7 @@ bool Student::choose_class(const int &course_id) {
 }
 
 Student::Student(long long Student_id, const std::string &Student_name, bool Gender, unsigned int Years,
-        std::string Major, unsigned int Classroom_id, long long Phone_number) {
+                 std::string Major, unsigned int Classroom_id, long long Phone_number) {
     student_id = Student_id;
     student_name = Student_name;
     gender = Gender;
